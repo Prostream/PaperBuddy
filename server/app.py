@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 from dotenv import load_dotenv
 import os
@@ -26,6 +26,51 @@ def info():
         "description": "Lightweight API for summarizing papers in a kid-friendly way.",
         "endpoints": ["/api/health", "/api/version", "/api/info"],
     })
+
+
+@app.post("/api/process")
+def process():
+    try:
+        input_type = request.form.get("type")
+        course_topic = request.form.get("courseTopic")
+        
+        if input_type == "pdf":
+            if "file" not in request.files:
+                return jsonify({"error": "No file provided"}), 400
+            file = request.files["file"]
+            # TODO: Process PDF file
+            return jsonify({
+                "ok": True,
+                "message": "PDF received (processing not implemented yet)",
+                "filename": file.filename,
+                "courseTopic": course_topic
+            })
+        elif input_type == "url":
+            url = request.form.get("url")
+            if not url:
+                return jsonify({"error": "URL required"}), 400
+            # TODO: Fetch and process URL
+            return jsonify({
+                "ok": True,
+                "message": "URL received (processing not implemented yet)",
+                "url": url,
+                "courseTopic": course_topic
+            })
+        elif input_type == "abstract":
+            abstract = request.form.get("abstract")
+            if not abstract:
+                return jsonify({"error": "Abstract required"}), 400
+            # TODO: Process abstract
+            return jsonify({
+                "ok": True,
+                "message": "Abstract received (processing not implemented yet)",
+                "abstractLength": len(abstract),
+                "courseTopic": course_topic
+            })
+        else:
+            return jsonify({"error": "Invalid input type"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.errorhandler(404)
