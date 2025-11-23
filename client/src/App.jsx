@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import './App.css'
 import Homepage from './Homepage'
+import { executeFullPipeline } from './api'
 
 function App() {
   const [view, setView] = useState('home') // 'home' or 'app'
@@ -44,35 +45,34 @@ function App() {
     setResult(null)
 
     try {
-      const formData = new FormData()
-      formData.append('type', inputType)
-      formData.append('courseTopic', courseTopic)
+      // Prepare input based on type
+      const input = {
+        type: inputType,
+        courseTopic: courseTopic
+      }
 
-      if (inputType === 'pdf' && pdfFile) {
-        formData.append('file', pdfFile)
+      if (inputType === 'pdf') {
+        if (!pdfFile) {
+          throw new Error('Please select a PDF file')
+        }
+        input.data = pdfFile
       } else if (inputType === 'manual') {
-        // Send structured manual input as JSON
-        const manualData = {
+        // Validate required fields
+        if (!manualTitle || !manualAuthors || !manualAbstract) {
+          throw new Error('Please fill in all required fields')
+        }
+
+        input.data = {
           title: manualTitle,
-          authors: manualAuthors.split(',').map(a => a.trim()).filter(a => a),
+          authors: manualAuthors,
           abstract: manualAbstract,
           sections: manualSections.filter(s => s.heading || s.content)
         }
-        formData.append('manualData', JSON.stringify(manualData))
       }
 
-      const res = await fetch('http://localhost:5175/api/process', {
-        method: 'POST',
-        body: formData
-      })
-
-      if (!res.ok) {
-        const errData = await res.json()
-        throw new Error(errData.error || `HTTP ${res.status}`)
-      }
-
-      const data = await res.json()
-      setResult(data)
+      // Execute full pipeline: Parse → Summarize → Generate Images
+      const pipelineResult = await executeFullPipeline(input)
+      setResult(pipelineResult)
     } catch (err) {
       setError(err.message || 'Request failed')
     } finally {
