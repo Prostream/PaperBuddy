@@ -33,42 +33,41 @@ def process():
     try:
         input_type = request.form.get("type")
         course_topic = request.form.get("courseTopic")
-        
+
         if input_type == "pdf":
             if "file" not in request.files:
                 return jsonify({"error": "No file provided"}), 400
             file = request.files["file"]
             # TODO: Process PDF file
+            # Module A (Person 1) will implement PDF parsing logic here
             return jsonify({
                 "ok": True,
                 "message": "PDF received (processing not implemented yet)",
                 "filename": file.filename,
                 "courseTopic": course_topic
             })
-        elif input_type == "url":
-            url = request.form.get("url")
-            if not url:
-                return jsonify({"error": "URL required"}), 400
-            # TODO: Fetch and process URL
+        elif input_type == "manual":
+            manual_data = request.form.get("manualData")
+            if not manual_data:
+                return jsonify({"error": "Manual data required"}), 400
+            # Parse the JSON string
+            import json
+            paper_data = json.loads(manual_data)
+            # TODO: Validate and process manual input
+            # Module A (Person 1) will implement validation logic here
             return jsonify({
                 "ok": True,
-                "message": "URL received (processing not implemented yet)",
-                "url": url,
-                "courseTopic": course_topic
-            })
-        elif input_type == "abstract":
-            abstract = request.form.get("abstract")
-            if not abstract:
-                return jsonify({"error": "Abstract required"}), 400
-            # TODO: Process abstract
-            return jsonify({
-                "ok": True,
-                "message": "Abstract received (processing not implemented yet)",
-                "abstractLength": len(abstract),
+                "message": "Manual input received (processing not implemented yet)",
+                "data": {
+                    "title": paper_data.get("title"),
+                    "authors": paper_data.get("authors"),
+                    "abstract": paper_data.get("abstract")[:100] + "..." if len(paper_data.get("abstract", "")) > 100 else paper_data.get("abstract"),
+                    "sections_count": len(paper_data.get("sections", []))
+                },
                 "courseTopic": course_topic
             })
         else:
-            return jsonify({"error": "Invalid input type"}), 400
+            return jsonify({"error": "Invalid input type. Must be 'pdf' or 'manual'"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

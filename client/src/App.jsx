@@ -1,15 +1,41 @@
 import { useState } from 'react'
 import './App.css'
+import Homepage from './Homepage'
 
 function App() {
-  const [inputType, setInputType] = useState('abstract')
+  const [view, setView] = useState('home') // 'home' or 'app'
+  const [inputType, setInputType] = useState('pdf')
   const [courseTopic, setCourseTopic] = useState('CV')
-  const [abstractText, setAbstractText] = useState('')
-  const [paperUrl, setPaperUrl] = useState('')
+
+  // PDF upload
   const [pdfFile, setPdfFile] = useState(null)
+
+  // Manual input fields
+  const [manualTitle, setManualTitle] = useState('')
+  const [manualAuthors, setManualAuthors] = useState('')
+  const [manualAbstract, setManualAbstract] = useState('')
+  const [manualSections, setManualSections] = useState([{ heading: '', content: '' }])
+
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState(null)
   const [error, setError] = useState(null)
+
+  // Handle dynamic sections for manual input
+  const addSection = () => {
+    setManualSections([...manualSections, { heading: '', content: '' }])
+  }
+
+  const removeSection = (index) => {
+    if (manualSections.length > 1) {
+      setManualSections(manualSections.filter((_, i) => i !== index))
+    }
+  }
+
+  const updateSection = (index, field, value) => {
+    const updatedSections = [...manualSections]
+    updatedSections[index][field] = value
+    setManualSections(updatedSections)
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -21,13 +47,18 @@ function App() {
       const formData = new FormData()
       formData.append('type', inputType)
       formData.append('courseTopic', courseTopic)
-      
+
       if (inputType === 'pdf' && pdfFile) {
         formData.append('file', pdfFile)
-      } else if (inputType === 'url') {
-        formData.append('url', paperUrl)
-      } else if (inputType === 'abstract') {
-        formData.append('abstract', abstractText)
+      } else if (inputType === 'manual') {
+        // Send structured manual input as JSON
+        const manualData = {
+          title: manualTitle,
+          authors: manualAuthors.split(',').map(a => a.trim()).filter(a => a),
+          abstract: manualAbstract,
+          sections: manualSections.filter(s => s.heading || s.content)
+        }
+        formData.append('manualData', JSON.stringify(manualData))
       }
 
       const res = await fetch('http://localhost:5175/api/process', {
@@ -49,11 +80,22 @@ function App() {
     }
   }
 
+  // Show homepage if view is 'home'
+  if (view === 'home') {
+    return <Homepage onGetStarted={() => setView('app')} />
+  }
+
   return (
     <div className="app-container">
       <header>
         <h1>PaperBuddy</h1>
         <p className="subtitle">Big ideas, tiny words.</p>
+        <button
+          className="back-to-home"
+          onClick={() => setView('home')}
+        >
+          ← Back to Home
+        </button>
       </header>
 
       <form onSubmit={handleSubmit} className="input-form">
@@ -65,63 +107,111 @@ function App() {
               className={inputType === 'pdf' ? 'active' : ''}
               onClick={() => setInputType('pdf')}
             >
-              PDF
+              Upload PDF
             </button>
             <button
               type="button"
-              className={inputType === 'url' ? 'active' : ''}
-              onClick={() => setInputType('url')}
+              className={inputType === 'manual' ? 'active' : ''}
+              onClick={() => setInputType('manual')}
             >
-              URL
-            </button>
-            <button
-              type="button"
-              className={inputType === 'abstract' ? 'active' : ''}
-              onClick={() => setInputType('abstract')}
-            >
-              Abstract
+              Manual Input
             </button>
           </div>
         </div>
 
         <div className="form-section">
-          <div className="input-wrapper">
-            {inputType === 'pdf' && (
-              <>
-                <label>Upload PDF (≤20MB)</label>
+          {inputType === 'pdf' && (
+            <div className="input-wrapper">
+              <label>Upload PDF (≤20MB)</label>
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={(e) => setPdfFile(e.target.files[0])}
+                required
+              />
+              <p className="helper-text">Upload a research paper in PDF format</p>
+            </div>
+          )}
+
+          {inputType === 'manual' && (
+            <div className="manual-input-container">
+              <div className="manual-field">
+                <label>Paper Title *</label>
                 <input
-                  type="file"
-                  accept=".pdf"
-                  onChange={(e) => setPdfFile(e.target.files[0])}
+                  type="text"
+                  placeholder="Enter the paper title"
+                  value={manualTitle}
+                  onChange={(e) => setManualTitle(e.target.value)}
                   required
                 />
-              </>
-            )}
-            {inputType === 'url' && (
-              <>
-                <label>Paper URL</label>
+              </div>
+
+              <div className="manual-field">
+                <label>Authors *</label>
                 <input
-                  type="url"
-                  placeholder="https://arxiv.org/abs/..."
-                  value={paperUrl}
-                  onChange={(e) => setPaperUrl(e.target.value)}
+                  type="text"
+                  placeholder="John Doe, Jane Smith, etc. (comma-separated)"
+                  value={manualAuthors}
+                  onChange={(e) => setManualAuthors(e.target.value)}
                   required
                 />
-              </>
-            )}
-            {inputType === 'abstract' && (
-              <>
-                <label>Abstract Text</label>
+                <p className="helper-text">Separate multiple authors with commas</p>
+              </div>
+
+              <div className="manual-field">
+                <label>Abstract *</label>
                 <textarea
-                  placeholder="Paste the paper abstract here..."
-                  value={abstractText}
-                  onChange={(e) => setAbstractText(e.target.value)}
-                  rows="6"
+                  placeholder="Enter the paper abstract"
+                  value={manualAbstract}
+                  onChange={(e) => setManualAbstract(e.target.value)}
+                  rows="4"
                   required
                 />
-              </>
-            )}
-          </div>
+              </div>
+
+              <div className="manual-field">
+                <label>Sections (Optional)</label>
+                <div className="sections-container">
+                  {manualSections.map((section, index) => (
+                    <div key={index} className="section-item">
+                      <div className="section-inputs">
+                        <input
+                          type="text"
+                          placeholder="Section heading (e.g., Introduction)"
+                          value={section.heading}
+                          onChange={(e) => updateSection(index, 'heading', e.target.value)}
+                          className="section-heading"
+                        />
+                        <textarea
+                          placeholder="Section content"
+                          value={section.content}
+                          onChange={(e) => updateSection(index, 'content', e.target.value)}
+                          rows="3"
+                          className="section-content"
+                        />
+                      </div>
+                      {manualSections.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeSection(index)}
+                          className="remove-section-btn"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={addSection}
+                    className="add-section-btn"
+                  >
+                    + Add Section
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="form-section">
