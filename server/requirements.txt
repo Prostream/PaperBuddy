@@ -12,14 +12,14 @@ beautifulsoup4==4.12.3
 # Alternative: pdfplumber==0.11.0
 
 # Module B (Person 2) - LLM Summarization
-# Choose ONE of the following:
-# openai==1.12.0        # For OpenAI GPT models
-# anthropic==0.18.1     # For Claude models
+openai>=1.12.0        # For OpenAI GPT models (Person 2)
+# Alternative: anthropic==0.18.1     # For Claude models
 
 # Module C (Person 3) - Image Generation
 # Choose based on your image generation service:
 # openai==1.12.0        # For DALL-E (if not already installed above)
 # replicate==0.22.0     # For Stable Diffusion via Replicate
+Pillow>=10.0.0         # For image processing
 
 # Optional - For better PDF parsing (if PyPDF2 doesn't work well)
 # pdfminer.six==20221105

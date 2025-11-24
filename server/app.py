@@ -7,6 +7,7 @@ import re
 import io
 import requests
 from PyPDF2 import PdfReader
+from llm_summarizer import LLMSummarizer
 
 load_dotenv()
 
@@ -569,66 +570,17 @@ def summarize():
         if not title or not abstract:
             return jsonify({"error": "Title and abstract are required"}), 400
 
-        # TODO: Implement LLM summarization
-        # Example implementation:
-        # import openai
-        # openai.api_key = os.getenv("OPENAI_API_KEY")
-        #
-        # prompt = f"""
-        # You are an expert teacher explaining complex papers to 5-year-olds.
-        # Course topic: {course_topic}
-        #
-        # Paper: {title}
-        # Authors: {', '.join(authors)}
-        # Abstract: {abstract}
-        #
-        # Provide a kid-friendly summary in JSON format with:
-        # - big_idea (one sentence, ≤12 words)
-        # - steps (3-5 bullet points)
-        # - example (real-world analogy)
-        # - why_it_matters
-        # - limitations
-        # - glossary (key terms)
-        # - for_class (prereqs, connections, questions)
-        # - accuracy_flags (uncertainties)
-        # """
-        #
-        # response = openai.ChatCompletion.create(
-        #     model="gpt-4",
-        #     messages=[{"role": "user", "content": prompt}],
-        #     response_format={"type": "json_object"}
-        # )
-        # summary = json.loads(response.choices[0].message.content)
+        # Use LLMSummarizer to generate kid-friendly summary
+        summarizer = LLMSummarizer(backend="openai")
+        summary = summarizer.summarize(
+            title=title,
+            authors=authors,
+            abstract=abstract,
+            sections=sections,
+            course_topic=course_topic
+        )
 
-        # Mock response for now
-        return jsonify({
-            "big_idea": "Computers learn to see like humans do",
-            "steps": [
-                "Feed lots of pictures to computer",
-                "Computer finds patterns in pictures",
-                "Computer learns what things look like",
-                "Computer can now recognize new things"
-            ],
-            "example": "Like teaching a kid to recognize dogs by showing many dog photos",
-            "why_it_matters": "Helps self-driving cars see pedestrians and stop signs",
-            "limitations": "Gets confused by weird lighting or unusual angles",
-            "glossary": [
-                {"term": "Neural Network", "definition": "A computer brain made of many tiny helpers"},
-                {"term": "Training", "definition": "Teaching the computer by showing examples"}
-            ],
-            "for_class": {
-                "prerequisites": ["Basic machine learning", "Linear algebra"],
-                "connections": ["Relates to CNNs and computer vision"],
-                "discussion_questions": [
-                    "How is this different from traditional vision?",
-                    "What are the ethical implications?"
-                ]
-            },
-            "accuracy_flags": [
-                "TODO: Person 2 should implement LLM API call",
-                "This is placeholder data"
-            ]
-        })
+        return jsonify(summary)
 
     except Exception as e:
         return jsonify({"error": f"Summarization failed: {str(e)}"}), 500
