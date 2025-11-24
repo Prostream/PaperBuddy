@@ -1,7 +1,8 @@
 """
 Image Generation Module (Module C)
 
-Generates kid-friendly illustrations using OpenAI DALL-E 3.
+Generates professional educational illustrations using OpenAI DALL-E 3.
+Creates clear, informative visuals to explain academic concepts simply.
 Falls back to placeholder images when API key is unavailable.
 """
 
@@ -12,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 
 class ImageGenerator:
-    """Generates kid-friendly illustrations for academic paper concepts."""
+    """Generates clear, professional illustrations for academic paper concepts."""
 
     def __init__(self, backend="placeholder"):
         """
@@ -36,10 +37,11 @@ class ImageGenerator:
         Returns:
             List of image objects with url, description, key_point, backend
         """
-        key_points = key_points[:max_images]
+        # Intelligently select concepts that benefit most from visualization
+        selected_points = self._select_visualizable_concepts(key_points, max_images)
         images = []
 
-        for i, point in enumerate(key_points):
+        for i, point in enumerate(selected_points):
             try:
                 if self.backend == "openai" and self.openai_key:
                     img = self._gen_openai(point, style)
@@ -51,6 +53,99 @@ class ImageGenerator:
                 images.append(self._gen_placeholder(point, style, i, error=True))
 
         return images
+
+    def _select_visualizable_concepts(self, key_points, max_images):
+        """
+        Select concepts that benefit most from visual explanation.
+        Dynamically determines optimal number of images based on content quality.
+
+        Prioritizes:
+        - Process/workflow descriptions (how things work)
+        - System architectures or structures
+        - Comparisons and relationships
+        - Complex mechanisms
+
+        Deprioritizes:
+        - Simple definitions
+        - Pure statistics or numbers
+        - Abstract conclusions
+        """
+        # Keywords that indicate good visualization candidates
+        visual_keywords = [
+            # Processes and mechanisms
+            'process', 'mechanism', 'workflow', 'pipeline', 'system',
+            'architecture', 'framework', 'structure', 'model',
+            # Actions and transformations
+            'how', 'works', 'transforms', 'converts', 'generates',
+            'analyzes', 'processes', 'computes', 'calculates',
+            # Relationships and comparisons
+            'relationship', 'interaction', 'between', 'compared',
+            'versus', 'difference', 'connection', 'flow',
+            # Complex concepts
+            'algorithm', 'method', 'approach', 'technique', 'strategy'
+        ]
+
+        # Keywords that indicate less visual concepts
+        non_visual_keywords = [
+            'results show', 'conclusion', 'found that', 'demonstrates',
+            'percentage', 'number of', 'statistics', 'data shows',
+            'proved', 'confirmed', 'validated'
+        ]
+
+        # Score each key point
+        scored_points = []
+        for point in key_points:
+            point_lower = point.lower()
+
+            # Calculate visual score
+            visual_score = sum(1 for kw in visual_keywords if kw in point_lower)
+            non_visual_penalty = sum(1 for kw in non_visual_keywords if kw in point_lower)
+
+            # Longer, more detailed points are often better for visualization
+            length_bonus = min(len(point.split()) / 20, 1.0)
+
+            final_score = visual_score - non_visual_penalty + length_bonus
+            scored_points.append((final_score, point))
+
+        # Sort by score (descending)
+        scored_points.sort(reverse=True, key=lambda x: x[0])
+
+        # Dynamic selection: only include concepts with score > threshold
+        # This ensures we only generate images for truly visual concepts
+        SCORE_THRESHOLD = 0.5  # Minimum score to be worth visualizing
+
+        worthy_points = [
+            (score, point) for score, point in scored_points
+            if score >= SCORE_THRESHOLD
+        ]
+
+        # Determine optimal number of images based on quality
+        if not worthy_points:
+            # No concepts meet the threshold - maybe generate 1-2 placeholders
+            num_to_select = min(2, len(key_points))
+            selected = [point for _, point in scored_points[:num_to_select]]
+        else:
+            # Select based on quality: more high-quality concepts = more images
+            # But cap at max_images
+            num_to_select = min(len(worthy_points), max_images)
+
+            # Further reduce if scores are low overall
+            avg_score = sum(score for score, _ in worthy_points[:num_to_select]) / num_to_select
+
+            if avg_score < 1.0:
+                # Low average score - reduce number
+                num_to_select = max(1, num_to_select // 2)
+            elif avg_score > 2.0:
+                # High average score - use more images (up to max)
+                num_to_select = min(num_to_select, max_images)
+
+            selected = [point for _, point in worthy_points[:num_to_select]]
+
+        # Maintain original order for consistency
+        result = [p for p in key_points if p in selected]
+
+        print(f"Selected {len(result)} out of {len(key_points)} concepts for visualization")
+        return result
 
     def _gen_placeholder(self, point, style, idx, error=False):
         """Generate placeholder image with colored background and text."""
@@ -134,16 +229,17 @@ class ImageGenerator:
         }
 
     def _build_prompt(self, point, style):
-        """Build kid-friendly DALL-E prompt."""
+        """Build professional educational DALL-E prompt."""
         styles = {
-            "pastel": "soft pastel colors, gentle, dreamy",
-            "colorful": "bright vibrant colors, cheerful",
-            "simple": "minimalist, clean, simple"
+            "pastel": "soft pastel colors, gentle, professional",
+            "colorful": "bright vibrant colors, engaging, modern",
+            "simple": "minimalist, clean, professional"
         }
         style_desc = styles.get(style, styles["pastel"])
 
         return (
-            f"A kid-friendly educational illustration showing: {point}. "
-            f"Style: {style_desc}, children's book aesthetic, "
-            f"cute, simple, clear concept, suitable for 5-year-olds, high quality"
+            f"A clear, professional educational illustration showing: {point}. "
+            f"Style: {style_desc}, scientific illustration style, "
+            f"clean design, easy to understand, informative, high quality, "
+            f"suitable for academic presentation"
         )
