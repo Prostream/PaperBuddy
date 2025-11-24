@@ -1,8 +1,21 @@
 import './Homepage.css'
+import { useTheme } from './contexts/ThemeContext'
 
 function Homepage({ onGetStarted }) {
+  const { theme, toggleTheme } = useTheme()
+  
   return (
     <div className="homepage">
+      <div className="homepage-header">
+        <button
+          className="theme-toggle"
+          onClick={toggleTheme}
+          aria-label="Toggle theme"
+          title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+        >
+          {theme === 'light' ? '🌙' : '☀️'}
+        </button>
+      </div>
       <div className="hero-section">
         <h1 className="project-title">PaperBuddy</h1>
         <p className="tagline">Big ideas, tiny words.</p>

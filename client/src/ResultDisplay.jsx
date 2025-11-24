@@ -156,13 +156,15 @@ function ResultDisplay({ paperData, summary, images }) {
         {summary.glossary && summary.glossary.length > 0 && (
           <section className="glossary-section">
             <h2 className="section-title">Glossary</h2>
-            <div className="glossary-list">
-              {summary.glossary.map((item, index) => (
-                <div key={index} className="glossary-item">
-                  <dt className="glossary-term">{item.term || 'Term'}</dt>
-                  <dd className="glossary-definition">{item.definition || 'Definition not available'}</dd>
-                </div>
-              ))}
+            <div className="glossary-container">
+              <ul className="glossary-list">
+                {summary.glossary.map((item, index) => (
+                  <li key={index} className="glossary-item">
+                    <span className="glossary-term">{item.term || 'Term'}:</span>
+                    <span className="glossary-definition">{item.definition || 'Definition not available'}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </section>
         )}
