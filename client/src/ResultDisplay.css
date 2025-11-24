@@ -103,8 +103,20 @@
 
 .images-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+}
+
+/* Ensure 3 columns even with fewer images */
+.images-grid:has(:nth-child(3)) {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* Fallback for browsers without :has() support */
+@supports not selector(:has(*)) {
+  .images-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .image-card {
@@ -297,8 +309,74 @@
   transition: background 0.2s;
 }
 
-.export-pdf-btn:hover {
+.export-pdf-btn:hover:not(:disabled) {
   background: #000;
+}
+
+.export-pdf-btn:disabled {
+  background: #6b7280;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* PDF Progress Bar */
+.pdf-progress-container {
+  margin-top: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.pdf-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.pdf-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.pdf-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.pdf-progress-text {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  font-weight: 500;
 }
 
 /* Print/PDF Styles */
@@ -314,6 +392,16 @@
 
   .display-content > * {
     page-break-inside: avoid;
+  }
+
+  /* Ensure 3 columns in PDF */
+  .images-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 1rem;
+  }
+
+  .image-card {
+    min-height: 200px;
   }
 }
 
