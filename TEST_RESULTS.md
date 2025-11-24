@@ -186,3 +186,96 @@ npm run dev
 - All dependencies installed
 
 **Next Step**: You can access `http://localhost:5174` in your browser for complete end-to-end testing.
+
+---
+
+## Module C: Image Generation Testing
+
+### Testing Strategy
+Unit testing of core algorithms and integration testing of API endpoints to validate image generation functionality and intelligent concept selection.
+
+### Scope of Testing
+- Image generation API endpoint
+- Intelligent concept selection algorithm
+- Dynamic image quantity determination
+- OpenAI DALL-E 3 integration
+- Error handling
+
+### Testing Environment
+- OS: macOS Darwin 25.1.0
+- Python: 3.11
+- Backend Server: Flask on http://localhost:5175
+- Key Dependencies: openai==2.8.1, Pillow, python-dotenv==1.0.1
+
+### Test Cases
+
+#### Test 1: API Endpoint Functionality
+**Description**: Verify `/api/images/generate` processes requests correctly
+
+**Input**:
+```json
+{"key_points": ["Neural networks learn patterns", "Training requires data"], "style": "pastel"}
+```
+
+**Expected Result**: HTTP 200, JSON with images array
+
+**Observed Result**: HTTP 200, valid response structure with all required fields
+
+---
+
+#### Test 2: Intelligent Concept Selection
+**Description**: Validate algorithm filters and prioritizes visualizable concepts
+
+**Input**: Mixed concepts including technical descriptions and statistical results
+
+**Expected Result**: Select high-scoring technical concepts, filter low-scoring conclusions
+
+**Observed Result**: Algorithm correctly prioritized architecture/mechanism concepts over result statements
+
+---
+
+#### Test 3: Dynamic Image Quantity
+**Description**: Verify variable output based on content quality scores
+
+**Expected Result**: 1-5 images depending on concept quality
+
+**Observed Result**: System adaptively generated 2-4 images based on calculated scores
+
+---
+
+#### Test 4: Professional Prompt Generation
+**Description**: Validate DALL-E prompts use appropriate academic style
+
+**Expected Result**: Prompts include "professional", "scientific illustration", "academic presentation"
+
+**Observed Result**: Prompt template verified with professional terminology
+
+---
+
+#### Test 5: Error Handling
+**Description**: Test API response to invalid inputs
+
+**Input**: Missing or empty key_points
+
+**Expected Result**: HTTP 400 with error message
+
+**Observed Result**: HTTP 400, {"error": "key_points are required"}
+
+---
+
+#### Test 6: Full Pipeline Integration
+**Description**: Test image generation within complete workflow
+
+**Expected Result**: Successful integration with parsing and summarization modules
+
+**Observed Result**: Data flows correctly between modules, images generated for summary key points
+
+---
+
+### Summary
+
+Total tests: 6
+Passed: 6
+Failed: 0
+
+The image generation module implements intelligent concept selection that reduces average output to 2-3 relevant images per paper. The system integrates successfully with the pipeline and handles errors appropriately.
