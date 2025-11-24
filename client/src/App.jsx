@@ -11,6 +11,9 @@ function App() {
   // PDF upload
   const [pdfFile, setPdfFile] = useState(null)
 
+  // URL input
+  const [urlInput, setUrlInput] = useState('')
+
   // Manual input fields
   const [manualTitle, setManualTitle] = useState('')
   const [manualAuthors, setManualAuthors] = useState('')
@@ -56,6 +59,11 @@ function App() {
           throw new Error('Please select a PDF file')
         }
         input.data = pdfFile
+      } else if (inputType === 'url') {
+        if (!urlInput || !urlInput.trim()) {
+          throw new Error('Please enter a URL')
+        }
+        input.data = urlInput.trim()
       } else if (inputType === 'manual') {
         // Validate required fields
         if (!manualTitle || !manualAuthors || !manualAbstract) {
@@ -111,6 +119,13 @@ function App() {
             </button>
             <button
               type="button"
+              className={inputType === 'url' ? 'active' : ''}
+              onClick={() => setInputType('url')}
+            >
+              URL / Abstract
+            </button>
+            <button
+              type="button"
               className={inputType === 'manual' ? 'active' : ''}
               onClick={() => setInputType('manual')}
             >
@@ -130,6 +145,20 @@ function App() {
                 required
               />
               <p className="helper-text">Upload a research paper in PDF format</p>
+            </div>
+          )}
+
+          {inputType === 'url' && (
+            <div className="input-wrapper">
+              <label>Paper URL or Abstract *</label>
+              <input
+                type="text"
+                placeholder="Enter arXiv URL (e.g., https://arxiv.org/abs/1234.5678) or ACM URL"
+                value={urlInput}
+                onChange={(e) => setUrlInput(e.target.value)}
+                required
+              />
+              <p className="helper-text">Supported: arXiv.org and ACM Digital Library URLs</p>
             </div>
           )}
 
@@ -224,6 +253,7 @@ function App() {
             <option value="NLP">Natural Language Processing</option>
             <option value="Systems">Systems</option>
           </select>
+          <p className="helper-text">Select the paper's research domain to help generate better summaries</p>
         </div>
 
         <button type="submit" className="submit-btn" disabled={loading}>
@@ -233,10 +263,59 @@ function App() {
         {error && <div className="error">Error: {error}</div>}
       </form>
 
-      {result && (
+      {result && result.paperData && (
         <div className="result-container">
-          <h2>Response:</h2>
-          <pre className="result-json">{JSON.stringify(result, null, 2)}</pre>
+          <h2>Parsed Paper Information</h2>
+          <div className="paper-metadata">
+            <div className="metadata-section">
+              <h3>Title</h3>
+              <p className="metadata-value">{result.paperData.title}</p>
+            </div>
+            
+            <div className="metadata-section">
+              <h3>Authors</h3>
+              <ul className="authors-list">
+                {result.paperData.authors && result.paperData.authors.map((author, idx) => (
+                  <li key={idx}>{author}</li>
+                ))}
+              </ul>
+            </div>
+            
+            <div className="metadata-section">
+              <h3>Abstract</h3>
+              <p className="metadata-value abstract-text">{result.paperData.abstract}</p>
+            </div>
+            
+            {result.paperData.sections && result.paperData.sections.length > 0 && (
+              <div className="metadata-section">
+                <h3>Sections ({result.paperData.sections.length})</h3>
+                <div className="sections-display">
+                  {result.paperData.sections.map((section, idx) => (
+                    <div key={idx} className="section-display-item">
+                      <h4 className="section-heading">{section.heading || 'Untitled Section'}</h4>
+                      <p className="section-content">
+                        {section.content.length > 500 
+                          ? `${section.content.substring(0, 500)}...` 
+                          : section.content}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <div className="metadata-section">
+              <h3>Course Topic</h3>
+              <p className="metadata-value">{result.paperData.courseTopic}</p>
+            </div>
+          </div>
+          
+          {result.summary && (
+            <div className="summary-preview">
+              <h3>Summary Preview</h3>
+              <p><strong>Big Idea:</strong> {result.summary.big_idea}</p>
+            </div>
+          )}
         </div>
       )}
     </div>

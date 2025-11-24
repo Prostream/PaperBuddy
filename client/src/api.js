@@ -52,6 +52,20 @@ export async function parsePDF(pdfFile, courseTopic = 'CV') {
 }
 
 /**
+ * Parse URL (arXiv/ACM)
+ * @param {string} url - The paper URL
+ * @param {string} courseTopic - CV | NLP | Systems
+ * @returns {Promise<Object>} Parsed paper data
+ */
+export async function parseURL(url, courseTopic = 'CV') {
+  return apiRequest('/api/parse/url', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url, courseTopic })
+  })
+}
+
+/**
  * Parse manual input
  * @param {Object} manualData - { title, authors, abstract, sections, courseTopic }
  * @returns {Promise<Object>} Validated paper data
@@ -116,6 +130,8 @@ export async function executeFullPipeline(input) {
 
     if (input.type === 'pdf') {
       paperData = await parsePDF(input.data, input.courseTopic)
+    } else if (input.type === 'url') {
+      paperData = await parseURL(input.data, input.courseTopic)
     } else if (input.type === 'manual') {
       paperData = await parseManual({
         ...input.data,
