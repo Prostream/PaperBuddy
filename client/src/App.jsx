@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import Homepage from './Homepage'
 import { executeFullPipeline } from './api'
+import ResultDisplay from './ResultDisplay'
 
 function App() {
   const [view, setView] = useState('home') // 'home' or 'app'
@@ -263,60 +264,13 @@ function App() {
         {error && <div className="error">Error: {error}</div>}
       </form>
 
-      {result && result.paperData && (
-        <div className="result-container">
-          <h2>Parsed Paper Information</h2>
-          <div className="paper-metadata">
-            <div className="metadata-section">
-              <h3>Title</h3>
-              <p className="metadata-value">{result.paperData.title}</p>
-            </div>
-            
-            <div className="metadata-section">
-              <h3>Authors</h3>
-              <ul className="authors-list">
-                {result.paperData.authors && result.paperData.authors.map((author, idx) => (
-                  <li key={idx}>{author}</li>
-                ))}
-              </ul>
-            </div>
-            
-            <div className="metadata-section">
-              <h3>Abstract</h3>
-              <p className="metadata-value abstract-text">{result.paperData.abstract}</p>
-            </div>
-            
-            {result.paperData.sections && result.paperData.sections.length > 0 && (
-              <div className="metadata-section">
-                <h3>Sections ({result.paperData.sections.length})</h3>
-                <div className="sections-display">
-                  {result.paperData.sections.map((section, idx) => (
-                    <div key={idx} className="section-display-item">
-                      <h4 className="section-heading">{section.heading || 'Untitled Section'}</h4>
-                      <p className="section-content">
-                        {section.content.length > 500 
-                          ? `${section.content.substring(0, 500)}...` 
-                          : section.content}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-            
-            <div className="metadata-section">
-              <h3>Course Topic</h3>
-              <p className="metadata-value">{result.paperData.courseTopic}</p>
-            </div>
-          </div>
-          
-          {result.summary && (
-            <div className="summary-preview">
-              <h3>Summary Preview</h3>
-              <p><strong>Big Idea:</strong> {result.summary.big_idea}</p>
-            </div>
-          )}
-        </div>
+      {/* Module D: Result Display - Complete display with PDF export */}
+      {result && result.paperData && result.summary && (
+        <ResultDisplay
+          paperData={result.paperData}
+          summary={result.summary}
+          images={result.images}
+        />
       )}
     </div>
   )
