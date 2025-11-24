@@ -329,41 +329,17 @@ def generate_images():
     """
     Module C - Generate kid-style illustrations
 
-    Input (JSON):
-        {
-            "key_points": [str],      # 3-5 key concepts to illustrate
-            "style": str              # Optional: "pastel" | "colorful" | "simple"
-        }
+    Supports multiple backends:
+    - placeholder: Local colored images (no API key)
+    - openai: DALL-E 3 (requires OPENAI_API_KEY in .env)
 
-    Output (JSON):
-        {
-            "images": [
-                {
-                    "url": str,           # Image URL or base64
-                    "description": str,   # What this image shows
-                    "key_point": str      # Which key point it illustrates
-                },
-                ...
-            ]
-        }
-
-    TODO (Person 3):
-        1. Install: pip install openai (for DALL-E)
-           or: pip install replicate (for Stable Diffusion)
-        2. Set up API key in .env
-        3. For each key point:
-           - Construct kid-friendly prompt
-           - Add style keywords: "pastel", "cute", "simple", "colorful"
-           - Call image generation API
-           - Handle rate limits
-        4. Implement fallback for failures:
-           - Return placeholder image URL
-           - Or generate simple colored rectangle
-        5. Return array of images
+    Input:  {"key_points": [str], "style": str}
+    Output: {"images": [{url, description, key_point, backend}]}
     """
     try:
-        data = request.get_json()
+        from image_generator import ImageGenerator
 
+        data = request.get_json()
         if not data:
             return jsonify({"error": "No data provided"}), 400
 
@@ -373,49 +349,14 @@ def generate_images():
         if not key_points:
             return jsonify({"error": "key_points are required"}), 400
 
-        # Limit to 5 images max
-        key_points = key_points[:5]
+        # Determine backend: use OpenAI if key exists, otherwise placeholder
+        backend = "openai" if os.getenv("OPENAI_API_KEY") else "placeholder"
 
-        # TODO: Implement image generation
-        # Example implementation:
-        # import openai
-        # openai.api_key = os.getenv("OPENAI_API_KEY")
-        #
-        # images = []
-        # for point in key_points:
-        #     prompt = f"kid-friendly {style} illustration: {point}, simple, cute, colorful"
-        #     try:
-        #         response = openai.Image.create(
-        #             prompt=prompt,
-        #             n=1,
-        #             size="512x512"
-        #         )
-        #         images.append({
-        #             "url": response.data[0].url,
-        #             "description": point,
-        #             "key_point": point
-        #         })
-        #     except Exception as e:
-        #         # Fallback: use placeholder
-        #         images.append({
-        #             "url": "https://via.placeholder.com/512/cccccc/ffffff?text=Image+Failed",
-        #             "description": f"Failed to generate: {point}",
-        #             "key_point": point
-        #         })
+        # Generate images
+        generator = ImageGenerator(backend=backend)
+        images = generator.generate_images(key_points, style, max_images=5)
 
-        # Mock response for now
-        mock_images = []
-        for i, point in enumerate(key_points):
-            mock_images.append({
-                "url": f"https://via.placeholder.com/512/pastel{i}/ffffff?text=TODO+Person+3",
-                "description": f"Placeholder for: {point}",
-                "key_point": point
-            })
-
-        return jsonify({
-            "images": mock_images,
-            "note": "TODO: Person 3 should implement image generation API"
-        })
+        return jsonify({"images": images, "backend": backend})
 
     except Exception as e:
         return jsonify({"error": f"Image generation failed: {str(e)}"}), 500
