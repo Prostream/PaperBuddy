@@ -111,20 +111,45 @@
 
 .images-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
 }
 
-/* Ensure 3 columns even with fewer images */
-.images-grid:has(:nth-child(3)) {
+/* 2张图片：2列1行（并排显示） */
+.images-grid.images-count-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* 3张图片：3列1行 */
+.images-grid.images-count-3 {
   grid-template-columns: repeat(3, 1fr);
 }
 
-/* Fallback for browsers without :has() support */
-@supports not selector(:has(*)) {
-  .images-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+/* 4张图片：2列2行 */
+.images-grid.images-count-4 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, auto);
+}
+
+/* 5张图片：第一行3张，第二行2张（居中） */
+.images-grid.images-count-5 {
+  grid-template-columns: repeat(6, 1fr);
+  grid-template-rows: repeat(2, auto);
+}
+
+/* 第一行：3张图片，每张占2列 */
+.images-grid.images-count-5 .image-card:nth-child(1),
+.images-grid.images-count-5 .image-card:nth-child(2),
+.images-grid.images-count-5 .image-card:nth-child(3) {
+  grid-column: span 2;
+}
+
+/* 第二行：2张图片，每张占2列，居中显示（从第2列开始，到第5列结束） */
+.images-grid.images-count-5 .image-card:nth-child(4) {
+  grid-column: 2 / 4;
+}
+
+.images-grid.images-count-5 .image-card:nth-child(5) {
+  grid-column: 4 / 6;
 }
 
 .image-card {
@@ -418,10 +443,46 @@
     page-break-inside: avoid;
   }
 
-  /* Ensure 3 columns in PDF */
-  .images-grid {
+  /* PDF 布局：根据图片数量自适应（2-5张） */
+  
+  /* 2张图片：2列1行 */
+  .images-grid.images-count-2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1rem;
+  }
+
+  /* 3张图片：3列1行 */
+  .images-grid.images-count-3 {
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 1rem;
+  }
+
+  /* 4张图片：2列2行 */
+  .images-grid.images-count-4 {
+    grid-template-columns: repeat(2, 1fr) !important;
+    grid-template-rows: repeat(2, auto) !important;
+    gap: 1rem;
+  }
+
+  /* 5张图片：第一行3张，第二行2张居中 */
+  .images-grid.images-count-5 {
+    grid-template-columns: repeat(6, 1fr) !important;
+    grid-template-rows: repeat(2, auto) !important;
+    gap: 1rem;
+  }
+
+  .images-grid.images-count-5 .image-card:nth-child(1),
+  .images-grid.images-count-5 .image-card:nth-child(2),
+  .images-grid.images-count-5 .image-card:nth-child(3) {
+    grid-column: span 2 !important;
+  }
+
+  .images-grid.images-count-5 .image-card:nth-child(4) {
+    grid-column: 2 / 4 !important;
+  }
+
+  .images-grid.images-count-5 .image-card:nth-child(5) {
+    grid-column: 4 / 6 !important;
   }
 
   .image-card {

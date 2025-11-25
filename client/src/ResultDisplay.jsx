@@ -103,10 +103,10 @@ function ResultDisplay({ paperData, summary, images }) {
           </section>
         )}
 
-        {/* Images (3-5张) */}
+        {/* Images (2-5张) */}
         {images && images.images && images.images.length > 0 && (
           <section className="images-section">
-            <div className="images-grid">
+            <div className={`images-grid images-count-${images.images.length}`}>
               {images.images.map((image, index) => (
                 <div key={index} className="image-card">
                   {image.url ? (
