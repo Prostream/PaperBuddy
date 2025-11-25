@@ -2,6 +2,37 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+.homepage-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.homepage .theme-toggle {
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+}
+
+.homepage .theme-toggle:hover {
+  background: var(--bg-primary);
+  border-color: var(--text-primary);
+  transform: scale(1.05);
 }
 
 /* Hero Section */
@@ -60,7 +91,7 @@
   text-align: center;
   font-size: 2.5rem;
   margin-bottom: 2rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .workflow-steps {
@@ -73,13 +104,18 @@
 }
 
 .step-card {
-  background: white;
+  background: var(--bg-primary);
   border-radius: 15px;
   padding: 1.5rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   text-align: center;
   min-width: 150px;
-  transition: transform 0.2s;
+  transition: transform 0.2s, background-color 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .step-card {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .step-card:hover {
@@ -102,13 +138,13 @@
 
 .step-card h3 {
   margin: 0 0 0.5rem 0;
-  color: #333;
+  color: var(--text-primary);
   font-size: 1.2rem;
 }
 
 .step-card p {
   margin: 0;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
@@ -121,7 +157,7 @@
   text-align: center;
   font-size: 2.5rem;
   margin-bottom: 2rem;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .tech-columns {
@@ -131,10 +167,16 @@
 }
 
 .tech-column {
-  background: white;
+  background: var(--bg-primary);
   border-radius: 15px;
   padding: 2rem;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+  border: 1px solid var(--border-color);
+}
+
+[data-theme="dark"] .tech-column {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .tech-column h3 {
@@ -152,10 +194,10 @@
 }
 
 .tech-column li {
-  color: #555;
+  color: var(--text-tertiary);
   padding: 0.5rem 0;
   font-size: 0.95rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .tech-column li:last-child {
@@ -166,7 +208,7 @@
 .homepage-footer {
   text-align: center;
   padding: 2rem;
-  color: #888;
+  color: var(--text-secondary);
   font-style: italic;
 }
 

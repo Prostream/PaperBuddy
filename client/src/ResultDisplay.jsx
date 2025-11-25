@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import './ResultDisplay.css'
 import { exportToPDF } from './utils/pdfExporter'
 
@@ -17,15 +17,44 @@ import { exportToPDF } from './utils/pdfExporter'
  */
 function ResultDisplay({ paperData, summary, images }) {
   const contentRef = useRef(null)
+  const [isExporting, setIsExporting] = useState(false)
+  const [exportProgress, setExportProgress] = useState(0)
 
   const handleExportPDF = async () => {
     if (!contentRef.current) return
     
+    setIsExporting(true)
+    setExportProgress(0)
+    
     try {
+      // Simulate progress updates with smoother increments
+      const progressInterval = setInterval(() => {
+        setExportProgress(prev => {
+          if (prev >= 85) {
+            clearInterval(progressInterval)
+            return prev
+          }
+          // Gradually slow down as we approach completion
+          const increment = prev < 50 ? 15 : prev < 75 ? 10 : 5
+          return Math.min(prev + increment, 85)
+        })
+      }, 150)
+
       await exportToPDF(contentRef.current, paperData?.title || 'PaperBuddy Summary')
+      
+      clearInterval(progressInterval)
+      setExportProgress(100)
+      
+      // Wait a moment to show 100% before hiding
+      setTimeout(() => {
+        setIsExporting(false)
+        setExportProgress(0)
+      }, 600)
     } catch (error) {
       console.error('PDF export failed:', error)
       alert('Failed to export PDF. Please try again.')
+      setIsExporting(false)
+      setExportProgress(0)
     }
   }
 
@@ -74,10 +103,10 @@ function ResultDisplay({ paperData, summary, images }) {
           </section>
         )}
 
-        {/* Images (3-5张) */}
+        {/* Images (2-5张) */}
         {images && images.images && images.images.length > 0 && (
           <section className="images-section">
-            <div className="images-grid">
+            <div className={`images-grid images-count-${images.images.length}`}>
               {images.images.map((image, index) => (
                 <div key={index} className="image-card">
                   {image.url ? (
@@ -127,13 +156,15 @@ function ResultDisplay({ paperData, summary, images }) {
         {summary.glossary && summary.glossary.length > 0 && (
           <section className="glossary-section">
             <h2 className="section-title">Glossary</h2>
-            <div className="glossary-list">
-              {summary.glossary.map((item, index) => (
-                <div key={index} className="glossary-item">
-                  <dt className="glossary-term">{item.term || 'Term'}</dt>
-                  <dd className="glossary-definition">{item.definition || 'Definition not available'}</dd>
-                </div>
-              ))}
+            <div className="glossary-container">
+              <ul className="glossary-list">
+                {summary.glossary.map((item, index) => (
+                  <li key={index} className="glossary-item">
+                    <span className="glossary-term">{item.term || 'Term'}:</span>
+                    <span className="glossary-definition">{item.definition || 'Definition not available'}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </section>
         )}
@@ -206,9 +237,23 @@ function ResultDisplay({ paperData, summary, images }) {
         <button 
           className="export-pdf-btn"
           onClick={handleExportPDF}
+          disabled={isExporting}
         >
-          Export as PDF
+          {isExporting ? 'Generating PDF...' : 'Export as PDF'}
         </button>
+        
+        {/* Loading Progress Bar */}
+        {isExporting && (
+          <div className="pdf-progress-container">
+            <div className="pdf-progress-bar">
+              <div 
+                className="pdf-progress-fill"
+                style={{ width: `${exportProgress}%` }}
+              ></div>
+            </div>
+            <p className="pdf-progress-text">{exportProgress}%</p>
+          </div>
+        )}
       </div>
     </div>
   )

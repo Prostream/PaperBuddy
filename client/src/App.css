@@ -9,8 +9,9 @@ body {
   min-height: 100vh;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
-  color: #111;
-  background: #fafafa;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .app-container {
@@ -25,28 +26,62 @@ header {
   position: relative;
 }
 
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
 header h1 {
   font-size: 2rem;
   margin: 0.25rem 0 0.5rem;
-  color: #111;
+  color: var(--text-primary);
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
 .subtitle {
-  color: #6b7280;
+  color: var(--text-secondary);
   margin: 0;
 }
 
+.theme-toggle {
+  padding: 0.5rem 0.75rem;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-size: 1.2rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-primary);
+  border-color: var(--text-primary);
+  transform: scale(1.05);
+}
+
 .back-to-home {
-  position: absolute;
-  top: 0;
-  left: 0;
   padding: 0.5rem 1rem;
   background: transparent;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  color: #111;
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-family: inherit;
   cursor: pointer;
@@ -54,19 +89,20 @@ header h1 {
 }
 
 .back-to-home:hover {
-  background: #f3f4f6;
-  border-color: #111;
+  background: var(--bg-tertiary);
+  border-color: var(--text-primary);
 }
 
 .input-form {
-  background: #ffffff;
+  background: var(--bg-primary);
   padding: 1.5rem;
   border-radius: 12px;
   margin-bottom: 2rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   width: 100%;
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 .form-section {
@@ -85,7 +121,7 @@ header h1 {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: #111;
+  color: var(--text-primary);
 }
 
 .input-type-selector {
@@ -98,24 +134,25 @@ header h1 {
 .input-type-selector button {
   min-width: 0;
   padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  background: #fff;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
   border-radius: 10px;
   cursor: pointer;
   font-size: 0.9rem;
   font-family: inherit;
+  color: var(--text-primary);
   transition: all 0.2s;
 }
 
 .input-type-selector button:hover {
-  border-color: #111;
-  background: #fafafa;
+  border-color: var(--text-primary);
+  background: var(--bg-secondary);
 }
 
 .input-type-selector button.active {
-  border-color: #111;
-  background: #111;
-  color: #fff;
+  border-color: var(--text-primary);
+  background: var(--text-primary);
+  color: var(--bg-primary);
 }
 
 input[type="file"],
@@ -124,11 +161,14 @@ textarea,
 select {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   border-radius: 10px;
   font-size: 1rem;
   font-family: inherit;
   box-sizing: border-box;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 input[type="file"] {
@@ -141,8 +181,14 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: #111;
+  border-color: var(--text-primary);
   box-shadow: 0 0 0 3px rgba(0,0,0,0.06);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.1);
 }
 
 textarea {
@@ -154,19 +200,19 @@ textarea {
 .submit-btn {
   width: 100%;
   padding: 1rem;
-  background: #111;
-  color: #fff;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   border: none;
   border-radius: 10px;
   font-size: 1rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, opacity 0.2s;
 }
 
 .submit-btn:hover:not(:disabled) {
-  background: #000;
+  opacity: 0.9;
 }
 
 .submit-btn:disabled {

@@ -3,8 +3,10 @@ import './App.css'
 import Homepage from './Homepage'
 import { executeFullPipeline } from './api'
 import ResultDisplay from './ResultDisplay'
+import { useTheme } from './contexts/ThemeContext'
 
 function App() {
+  const { theme, toggleTheme } = useTheme()
   const [view, setView] = useState('home') // 'home' or 'app'
   const [inputType, setInputType] = useState('pdf')
   const [courseTopic, setCourseTopic] = useState('CV')
@@ -97,14 +99,28 @@ function App() {
   return (
     <div className="app-container">
       <header>
-        <h1>PaperBuddy</h1>
-        <p className="subtitle">Big ideas, tiny words.</p>
-        <button
-          className="back-to-home"
-          onClick={() => setView('home')}
-        >
-          ← Back to Home
-        </button>
+        <div className="header-content">
+          <div>
+            <h1>PaperBuddy</h1>
+            <p className="subtitle">Big ideas, tiny words.</p>
+          </div>
+          <div className="header-actions">
+            <button
+              className="theme-toggle"
+              onClick={toggleTheme}
+              aria-label="Toggle theme"
+              title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
+            <button
+              className="back-to-home"
+              onClick={() => setView('home')}
+            >
+              ← Back to Home
+            </button>
+          </div>
+        </div>
       </header>
 
       <form onSubmit={handleSubmit} className="input-form">
