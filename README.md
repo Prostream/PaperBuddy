@@ -20,4 +20,35 @@ PaperBuddy is a lightweight web app that:
 |-------|------|-------------|
 | Frontend | **React** | Simple UI, PDF upload, display & export |
 | Backend | **Flask (Python)** | REST API: parse PDF, summarize, generate images |
-| LLM | Hosted API (e.g., OpenAI) | Summarize with safe “child-friendly” tone |
+| LLM | Hosted API (e.g., OpenAI) | Summarize with safe "child-friendly" tone |
+
+---
+
+## Documentation
+
+Detailed documentation is available in the [docs](docs/) folder:
+
+- [API Guide](docs/API_GUIDE.md) - Complete API documentation for all modules
+- [Module A Implementation](docs/MODULE_A_EXPLANATION.md) - PDF/URL parsing details
+- [Module B Implementation](docs/MODULE_B_README.md) - LLM summarization guide
+- [Test Results](docs/TEST_RESULTS.md) - Testing documentation and results
+
+---
+
+## Quick Start
+
+### Backend Setup
+```bash
+cd server
+pip install -r requirements.txt
+python app.py
+```
+
+### Frontend Setup
+```bash
+cd client
+npm install
+npm run dev
+```
+
+Visit `http://localhost:5174` to use the application.
