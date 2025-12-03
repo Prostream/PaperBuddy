@@ -6,14 +6,14 @@ import { exportToPDF } from './utils/pdfExporter'
  * ResultDisplay - Module D Main Component
  * 
  * Displays the complete result according to API_GUIDE layout:
- * 1. Header (论文标题 + 作者)
- * 2. Big Idea (突出显示)
+ * 1. Header (Paper Title + Authors)
+ * 2. Big Idea (Highlighted)
  * 3. How It Works (Steps) + Images
  * 4. Example & Why It Matters
- * 5. Glossary (术语表)
+ * 5. Glossary
  * 6. For Class Section
  * 7. Limitations & Accuracy Flags
- * 8. Export as PDF Button (底部)
+ * 8. Export as PDF Button (Bottom)
  */
 function ResultDisplay({ paperData, summary, images }) {
   const contentRef = useRef(null)
@@ -71,7 +71,7 @@ function ResultDisplay({ paperData, summary, images }) {
     <div className="result-display">
       {/* Main content - this will be exported to PDF */}
       <main className="display-content" ref={contentRef}>
-        {/* 1. Header (论文标题 + 作者) */}
+        {/* 1. Header (Paper Title + Authors) */}
         <header className="display-header">
           <h1 className="paper-title">{paperData.title}</h1>
           {paperData.authors && paperData.authors.length > 0 && (
@@ -81,7 +81,7 @@ function ResultDisplay({ paperData, summary, images }) {
           )}
         </header>
 
-        {/* 2. Big Idea (突出显示) */}
+        {/* 2. Big Idea (Highlighted) */}
         {summary.big_idea && (
           <section className="big-idea-section">
             <h2 className="section-title">Big Idea</h2>
@@ -103,7 +103,7 @@ function ResultDisplay({ paperData, summary, images }) {
           </section>
         )}
 
-        {/* Images (2-5张) */}
+        {/* Images (2-5 images) */}
         {images && images.images && images.images.length > 0 && (
           <section className="images-section">
             <div className={`images-grid images-count-${images.images.length}`}>
@@ -152,7 +152,7 @@ function ResultDisplay({ paperData, summary, images }) {
           </section>
         )}
 
-        {/* 5. Glossary (术语表) */}
+        {/* 5. Glossary */}
         {summary.glossary && summary.glossary.length > 0 && (
           <section className="glossary-section">
             <h2 className="section-title">Glossary</h2>
@@ -232,7 +232,7 @@ function ResultDisplay({ paperData, summary, images }) {
         )}
       </main>
 
-      {/* 8. Export as PDF Button (底部) */}
+      {/* 8. Export as PDF Button (Bottom) */}
       <div className="export-section">
         <button 
           className="export-pdf-btn"

@@ -114,36 +114,36 @@
   gap: 1.5rem;
 }
 
-/* 2张图片：2列1行（并排显示） */
+/* 2 images: 2 columns 1 row (side by side) */
 .images-grid.images-count-2 {
   grid-template-columns: repeat(2, 1fr);
 }
 
-/* 3张图片：3列1行 */
+/* 3 images: 3 columns 1 row */
 .images-grid.images-count-3 {
   grid-template-columns: repeat(3, 1fr);
 }
 
-/* 4张图片：2列2行 */
+/* 4 images: 2 columns 2 rows */
 .images-grid.images-count-4 {
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, auto);
 }
 
-/* 5张图片：第一行3张，第二行2张（居中） */
+/* 5 images: first row 3 images, second row 2 images (centered) */
 .images-grid.images-count-5 {
   grid-template-columns: repeat(6, 1fr);
   grid-template-rows: repeat(2, auto);
 }
 
-/* 第一行：3张图片，每张占2列 */
+/* First row: 3 images, each spans 2 columns */
 .images-grid.images-count-5 .image-card:nth-child(1),
 .images-grid.images-count-5 .image-card:nth-child(2),
 .images-grid.images-count-5 .image-card:nth-child(3) {
   grid-column: span 2;
 }
 
-/* 第二行：2张图片，每张占2列，居中显示（从第2列开始，到第5列结束） */
+/* Second row: 2 images, each spans 2 columns, centered (from column 2 to column 5) */
 .images-grid.images-count-5 .image-card:nth-child(4) {
   grid-column: 2 / 4;
 }
@@ -443,28 +443,28 @@
     page-break-inside: avoid;
   }
 
-  /* PDF 布局：根据图片数量自适应（2-5张） */
+  /* PDF layout: adaptive based on image count (2-5 images) */
   
-  /* 2张图片：2列1行 */
+  /* 2 images: 2 columns 1 row */
   .images-grid.images-count-2 {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 1rem;
   }
 
-  /* 3张图片：3列1行 */
+  /* 3 images: 3 columns 1 row */
   .images-grid.images-count-3 {
     grid-template-columns: repeat(3, 1fr) !important;
     gap: 1rem;
   }
 
-  /* 4张图片：2列2行 */
+  /* 4 images: 2 columns 2 rows */
   .images-grid.images-count-4 {
     grid-template-columns: repeat(2, 1fr) !important;
     grid-template-rows: repeat(2, auto) !important;
     gap: 1rem;
   }
 
-  /* 5张图片：第一行3张，第二行2张居中 */
+  /* 5 images: first row 3 images, second row 2 images centered */
   .images-grid.images-count-5 {
     grid-template-columns: repeat(6, 1fr) !important;
     grid-template-rows: repeat(2, auto) !important;
