@@ -134,7 +134,7 @@ class ImageGenerator:
 
             if avg_score < 1.0:
                 # Low average score - reduce number
-                num_to_select = max(1, num_to_select // 2)
+                num_to_select = max(2, num_to_select)
             elif avg_score > 2.0:
                 # High average score - use more images (up to max)
                 num_to_select = min(num_to_select, max_images)
