@@ -443,7 +443,11 @@
     page-break-inside: avoid;
   }
 
+<<<<<<< Updated upstream
   /* PDF layout: adaptive based on image count (2-5 images) */
+=======
+  /* adaptive images layout */
+>>>>>>> Stashed changes
   
   /* 2 images: 2 columns 1 row */
   .images-grid.images-count-2 {
