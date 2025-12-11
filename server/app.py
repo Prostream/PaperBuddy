@@ -12,7 +12,8 @@ from llm_summarizer import LLMSummarizer
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": os.getenv("CORS_ORIGIN", "http://localhost:5174")}})
+# Allow all origins for deployment (you can restrict this in production if needed)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Configure max file size (20MB)
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
