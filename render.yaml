@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: paperbuddy-backend
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: pip install -r server/requirements.txt
+    startCommand: cd server && python app.py
+    envVars:
+      - key: PORT
+        value: 5175
+      - key: OPENAI_API_KEY
+        sync: false  # 需要在 Render 控制台手动设置
+      - key: CORS_ORIGIN
+        value: "*"  # 允许所有来源，部署后建议改为具体的 Vercel 域名
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    healthCheckPath: /api/health
