@@ -13,7 +13,7 @@ load_dotenv()
 
 app = Flask(__name__)
 # Allow all origins for deployment (you can restrict this in production if needed)
-CORS(app, resources={r"/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"], "allow_headers": ["Content-Type", "Authorization"]}})
 
 # Configure max file size (20MB)
 app.config['MAX_CONTENT_LENGTH'] = 20 * 1024 * 1024
