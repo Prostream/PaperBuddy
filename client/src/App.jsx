@@ -139,7 +139,7 @@ function App() {
               className={inputType === 'url' ? 'active' : ''}
               onClick={() => setInputType('url')}
             >
-              URL / Abstract
+              URL
             </button>
             <button
               type="button"
@@ -167,7 +167,7 @@ function App() {
 
           {inputType === 'url' && (
             <div className="input-wrapper">
-              <label>Paper URL or Abstract *</label>
+              <label>Paper URL *</label>
               <input
                 type="text"
                 placeholder="Enter arXiv URL (e.g., https://arxiv.org/abs/1234.5678) or ACM URL"

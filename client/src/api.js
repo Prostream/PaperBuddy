@@ -18,12 +18,41 @@ async function apiRequest(endpoint, options = {}) {
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, options)
 
+    // Read response body once as text
+    const text = await response.text()
+
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || `HTTP ${response.status}`)
+      // Try to parse as JSON for error details
+      let errorMessage = `HTTP ${response.status}: ${response.statusText}`
+      if (text) {
+        try {
+          const errorData = JSON.parse(text)
+          errorMessage = errorData.error || errorMessage
+        } catch (e) {
+          // If not JSON, use the text as error message
+          errorMessage = text || errorMessage
+        }
+      }
+      throw new Error(errorMessage)
     }
 
-    return await response.json()
+    // Check if response is empty
+    if (!text.trim()) {
+      throw new Error('Empty response from server')
+    }
+
+    // Check content type
+    const contentType = response.headers.get('content-type')
+    if (contentType && !contentType.includes('application/json')) {
+      throw new Error(`Expected JSON but got ${contentType}: ${text.substring(0, 100)}`)
+    }
+
+    // Parse JSON
+    try {
+      return JSON.parse(text)
+    } catch (e) {
+      throw new Error(`Invalid JSON response: ${text.substring(0, 100)}`)
+    }
   } catch (error) {
     console.error(`API Error (${endpoint}):`, error)
     throw error
@@ -125,7 +154,7 @@ export async function generateImages(keyPoints, style = 'pastel') {
 export async function executeFullPipeline(input) {
   try {
     // Step 1: Parse input (Module A)
-    console.log('Step 1: Parsing input...')
+    console.log('Step 1: Parsing input...', { type: input.type, courseTopic: input.courseTopic })
     let paperData
 
     if (input.type === 'pdf') {
@@ -138,7 +167,7 @@ export async function executeFullPipeline(input) {
         courseTopic: input.courseTopic
       })
     } else {
-      throw new Error('Invalid input type')
+      throw new Error(`Invalid input type: ${input.type}`)
     }
 
     console.log('✓ Paper data parsed:', paperData)
@@ -151,7 +180,14 @@ export async function executeFullPipeline(input) {
     // Step 3: Generate images (Module C)
     console.log('Step 3: Generating images...')
     const keyPoints = summary.steps || []
-    const images = await generateImages(keyPoints)
+    // Only generate images if we have key points
+    let images = { images: [] }
+    if (keyPoints && keyPoints.length > 0) {
+      console.log('Generating images for key points:', keyPoints)
+      images = await generateImages(keyPoints)
+    } else {
+      console.warn('No key points available, skipping image generation')
+    }
     console.log('✓ Images generated:', images)
 
     // Return all data for final rendering (Module D)
